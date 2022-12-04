@@ -10,7 +10,7 @@ export const init = () => {
     handleSubmit();
   });
 };
-// vad gör den för förändring? Vänta med att göra denna
+
 export async function handleSubmit() {
   let searchText = (document.getElementById("searchText") as HTMLInputElement)
     .value;

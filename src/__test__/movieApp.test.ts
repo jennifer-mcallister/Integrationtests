@@ -36,11 +36,11 @@ describe("handleSubmit", ()=> {
         </form>
         <div id="movie-container"></div>`;
 
-          jest.mock('../ts/services/movieservice');
+        jest.mock('../ts/services/movieservice');
 
-          await handleSubmit();
+        await handleSubmit();
         
-          expect(document.getElementById("movie-container")?.innerHTML).toBe("<p>Inga sökresultat att visa</p>");
+        expect(document.getElementById("movie-container")?.innerHTML).toBe("<p>Inga sökresultat att visa</p>");
     })
 
     document.body.innerHTML="";
@@ -54,11 +54,11 @@ describe("handleSubmit", ()=> {
         </form>
         <div id="movie-container"></div>`;
 
-          jest.mock('../ts/services/movieservice');
+        jest.mock('../ts/services/movieservice');
 
-          await handleSubmit();
+        await handleSubmit();
         
-          expect(document.querySelectorAll("div.movie").length).toBe(1);
+        expect(document.querySelectorAll("div.movie").length).toBe(1);
     })
 
     document.body.innerHTML="";
