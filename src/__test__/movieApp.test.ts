@@ -129,7 +129,7 @@ describe("displayNoResult", ()=> {
         jest.restoreAllMocks();
     });
 
-    test("should create p-tag", ()=> {
+    test("should create p-tag", async ()=> {
         document.body.innerHTML = `
         <div id="movie-container"></div>`;
 
@@ -137,7 +137,7 @@ describe("displayNoResult", ()=> {
          "movie-container"
         ) as HTMLDivElement;
         
-        displayNoResult(container);
+        await displayNoResult(container);
 
         expect(container.innerHTML).toBe("<p>Inga sökresultat att visa</p>");
         document.body.innerHTML = "";
@@ -145,26 +145,3 @@ describe("displayNoResult", ()=> {
 });
 
 
-
-
-// dubbletter av test som troligtvis kan tas bort
-
-test("should get fake mockdata", async ()=> {
-    document.body.innerHTML = `<input type="text" id="searchText" placeholder="Skriv titel här"/>
-    <div id="movie-container"></div>`;
-
-    let searchText: string = "Hello world";
-    
-    let movies: IMovie [] = await getData(searchText);
-
-    expect(movies.length).toBe(1);
-});
-
-test("should show no result text", async ()=> {
-    document.body.innerHTML = `<div id="movie-container"></div>`;
-    let container: HTMLDivElement = document.getElementById("movie-container") as HTMLDivElement;
-
-    await displayNoResult(container);
-
-    expect(container.innerHTML).toBe("<p>Inga sökresultat att visa</p>");
-});
