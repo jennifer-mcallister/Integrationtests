@@ -1,28 +1,49 @@
 import { IOmdbResponse } from "../ts/models/IOmdbResponse";
-import { getData } from "../ts/services/movieservice";
+import { IMovie } from "../ts/models/Movie";
+import { getData } from "../ts/services/__mocks__/movieservice";
 
 
-let mockData: IOmdbResponse = {
-    Search: [{
+let mockData: IMovie[] = 
+    [{
         Title: "Hello world",
         imdbID: "ID",
         Type: "movie",
         Poster: "image",
         Year: "1234",
-    }]
-}
+    }];
+
 
 jest.mock("axios", ()=> ({
     get: async ()=> {
         return new Promise((resolve)=> {
-            resolve({data:mockData}); 
+            resolve({data:{Search: mockData,}}); 
         })
     }
 }));
 
-test("should get mock data", async()=> {
-    let result = await getData("Hello world");
 
-    expect(result.length).toBe(mockData.Search.length);
-    expect(result[0].Title).toBe("Hello world");
+beforeEach(()=> {
+    jest.resetModules();
+    jest.restoreAllMocks();
 });
+
+test("should get mock data", async () => {
+    let searchText = "Hello world";
+    let result :IMovie[] = await getData(searchText);
+
+    expect(result.length).toBe(mockData.length);
+});
+
+beforeEach(()=> {
+    jest.resetModules();
+    jest.restoreAllMocks();
+});
+
+// test("should get error", async ()=> {
+//     let searchText = "";
+    
+//     let result :IMovie[] = await getData(searchText);
+
+//     expect(result.length).toBe(0);
+    
+// });

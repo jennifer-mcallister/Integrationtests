@@ -2,87 +2,133 @@
  * @jest-environment jsdom
  */
 
+
+import { IMovie } from "../ts/models/Movie";
 import { createHtml, displayNoResult, handleSubmit } from "../ts/movieApp";
+import { getData } from "../ts/services/movieservice";
+import { error, mockData } from "../ts/services/__mocks__/movieservice";
 
-document.body.innerHTML="";
 
-let movies = [{
-    Title: "B",
-    imdbID: "ID",
-    Type: "movie",
-    Poster: "image",
-    Year: "1234",
-},{
-    Title: "C",
-    imdbID: "ID",
-    Type: "movie",
-    Poster: "image",
-    Year: "1234",
-},{
-    Title: "A",
-    imdbID: "ID",
-    Type: "movie",
-    Poster: "image",
-    Year: "1234",
-}];
+
+// jest.mock("axios", ()=> ({
+//     get: async ()=> {
+//         return new Promise((resolve)=> { 
+//             resolve({data:{Search: mockData,}});
+//         })
+//     }
+// }));
+
+jest.mock("axios", ()=> ({
+    get: async ()=> {
+        return new Promise((resolve, reject)=> { 
+            if (resolve) {
+                resolve({data:{Search: mockData,}});
+            } else {
+                reject(error);
+            }
+           
+        })
+    }
+}));
+
+
+
+
+describe("init", ()=> {
+
+    // beforeEach(()=> {
+    //     jest.resetModules();
+    //     jest.restoreAllMocks();
+    //  });
+
+})
+
+
 
 describe("handleSubmit", ()=> {
-    test("should throw error", async ()=> {
 
+    beforeEach(()=> {
+        jest.resetModules();
+        jest.restoreAllMocks();
+        jest.clearAllMocks();
+    });
+
+    test("should get data and call createHtml", async ()=> {
         document.body.innerHTML = `
         <form id="searchForm">
-        <input type="text" id="searchText" placeholder="Skriv titel här"/>
-        <button type="submit" id="search">Sök</button>
+            <input type="text" id="searchText" placeholder="Skriv titel här" value="Hello world"/>
+            <button type="submit" id="search">Sök</button>
         </form>
         <div id="movie-container"></div>`;
-
-        jest.mock('../ts/services/movieservice');
-
+        let movies = await getData("Hello world");
+        
         await handleSubmit();
+
         
-        expect(document.getElementById("movie-container")?.innerHTML).toBe("<p>Inga sökresultat att visa</p>");
-    })
 
-    document.body.innerHTML="";
+        expect(document.querySelectorAll("div.movie").length).toBe(1);
+        expect(document.querySelectorAll("img").length).toBe(1);
+        expect(document.querySelectorAll("h3").length).toBe(1);
+        expect(document.querySelector("h3")?.innerHTML).toBe("Hello world");
+        expect(movies.length).toBe(1);
 
-    // test("should create html", async ()=> {
+        document.body.innerHTML = "";
+    });
 
-    //     document.body.innerHTML = `
-    //     <form id="searchForm">
-    //     <input type="text" id="searchText" placeholder="Skriv titel här" value="hello" />
-    //     <button type="submit" id="search">Sök</button>
-    //     </form>
-    //     <div id="movie-container"></div>`;
+    beforeEach(()=> {
+        jest.resetModules();
+        jest.restoreAllMocks();
+        jest.clearAllMocks();
+    });
 
-    //     jest.mock('../ts/services/movieservice');
-
-    //     await handleSubmit();
-        
-    //     expect(document.querySelectorAll("div.movie").length).toBe(1);
-    // })
-
-    document.body.innerHTML="";
-});
-
-describe("createHTML", ()=> {
-
-    test("should create html", ()=> {
+    test("should catch error", async()=> {
         document.body.innerHTML = `
+        <form id="searchForm">
+            <input type="text" id="searchText" placeholder="Skriv titel här" />
+            <button type="submit" id="search">Sök</button>
+        </form>
         <div id="movie-container"></div>`;
-
         let container: HTMLDivElement = document.getElementById(
             "movie-container"
-          ) as HTMLDivElement;
+           ) as HTMLDivElement;
+
+    })
     
-        createHtml(movies, container);
-    
-        expect(document.querySelectorAll("div.movie").length).toBe(3);
-    });
-    
-    document.body.innerHTML="";
 });
 
+describe("createHtml", ()=> {
+
+    beforeEach(()=> {
+        jest.resetModules();
+        jest.restoreAllMocks();
+    });
+
+    test("should get create html for mockdata", async()=> {
+
+        document.body.innerHTML = `<div id="movie-container"></div>`;
+        let container: HTMLDivElement = document.getElementById("movie-container") as HTMLDivElement;
+    
+        let movies = await getData("Hello world");
+        await createHtml(movies, container);
+    
+        expect(document.querySelectorAll("div.movie").length).toBe(1);
+        expect(document.querySelectorAll("img").length).toBe(1);
+        expect(document.querySelectorAll("h3").length).toBe(1);
+        expect(document.querySelector("h3")?.innerHTML).toBe("Hello world");
+    });
+})
+
+
+
+
+
 describe("displayNoResult", ()=> {
+
+    beforeEach(()=> {
+        jest.resetModules();
+        jest.restoreAllMocks();
+    });
+
     test("should create p-tag", ()=> {
         document.body.innerHTML = `
         <div id="movie-container"></div>`;
@@ -93,9 +139,32 @@ describe("displayNoResult", ()=> {
         
         displayNoResult(container);
 
-        expect(document.getElementById("movie-container")?.innerHTML).toBe("<p>Inga sökresultat att visa</p>")
-
+        expect(container.innerHTML).toBe("<p>Inga sökresultat att visa</p>");
+        document.body.innerHTML = "";
     });
+});
 
-    document.body.innerHTML="";
+
+
+
+// dubbletter av test som troligtvis kan tas bort
+
+test("should get fake mockdata", async ()=> {
+    document.body.innerHTML = `<input type="text" id="searchText" placeholder="Skriv titel här"/>
+    <div id="movie-container"></div>`;
+
+    let searchText: string = "Hello world";
+    
+    let movies: IMovie [] = await getData(searchText);
+
+    expect(movies.length).toBe(1);
+});
+
+test("should show no result text", async ()=> {
+    document.body.innerHTML = `<div id="movie-container"></div>`;
+    let container: HTMLDivElement = document.getElementById("movie-container") as HTMLDivElement;
+
+    await displayNoResult(container);
+
+    expect(container.innerHTML).toBe("<p>Inga sökresultat att visa</p>");
 });
