@@ -1,6 +1,6 @@
 import { IOmdbResponse } from "../ts/models/IOmdbResponse";
 import { IMovie } from "../ts/models/Movie";
-import { getData } from "../ts/services/__mocks__/movieservice";
+import { error, getData } from "../ts/services/__mocks__/movieservice";
 
 
 let mockData: IMovie[] = 
@@ -13,13 +13,18 @@ let mockData: IMovie[] =
     }];
 
 
-jest.mock("axios", ()=> ({
-    get: async ()=> {
-        return new Promise((resolve)=> {
-            resolve({data:{Search: mockData,}}); 
-        })
-    }
-}));
+    jest.mock("axios", ()=> ({
+        get: async ()=> {
+            return new Promise((resolve, reject)=> { 
+                if (resolve) {
+                    resolve({data:{Search: mockData,}});
+                } else {
+                    reject(error);
+                }
+               
+            })
+        }
+    }));
 
 
 beforeEach(()=> {
