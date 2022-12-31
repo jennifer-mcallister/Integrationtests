@@ -3,20 +3,11 @@
  */
 
 
-import { IMovie } from "../ts/models/Movie";
 import { createHtml, displayNoResult, handleSubmit } from "../ts/movieApp";
 import { getData } from "../ts/services/movieservice";
 import { error, mockData } from "../ts/services/__mocks__/movieservice";
 
 
-
-// jest.mock("axios", ()=> ({
-//     get: async ()=> {
-//         return new Promise((resolve)=> { 
-//             resolve({data:{Search: mockData,}});
-//         })
-//     }
-// }));
 
 jest.mock("axios", ()=> ({
     get: async ()=> {
@@ -30,19 +21,6 @@ jest.mock("axios", ()=> ({
         })
     }
 }));
-
-
-
-
-describe("init", ()=> {
-
-    // beforeEach(()=> {
-    //     jest.resetModules();
-    //     jest.restoreAllMocks();
-    //  });
-
-})
-
 
 
 describe("handleSubmit", ()=> {
@@ -81,6 +59,7 @@ describe("handleSubmit", ()=> {
         jest.clearAllMocks();
     });
 
+
     test("should catch error", async()=> {
         document.body.innerHTML = `
         <form id="searchForm">
@@ -91,10 +70,10 @@ describe("handleSubmit", ()=> {
         let container: HTMLDivElement = document.getElementById(
             "movie-container"
            ) as HTMLDivElement;
-
-    })
-    
+           document.body.innerHTML = "";
+    })   
 });
+
 
 describe("createHtml", ()=> {
 
@@ -115,11 +94,10 @@ describe("createHtml", ()=> {
         expect(document.querySelectorAll("img").length).toBe(1);
         expect(document.querySelectorAll("h3").length).toBe(1);
         expect(document.querySelector("h3")?.innerHTML).toBe("Hello world");
+
+        document.body.innerHTML = "";
     });
-})
-
-
-
+});
 
 
 describe("displayNoResult", ()=> {
